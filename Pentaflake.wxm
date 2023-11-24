@@ -1,0 +1,273 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/*               COPYRIGHT NOTICE
+
+Copyright (C) 2009 Mario Rodriguez Riotorto
+
+This program is free software; you can redistribute
+it and/or modify it under the terms of the
+GNU General Public License as published by
+the Free Software Foundation; either version 2 
+of the License, or (at your option) any later version. 
+
+This program is distributed in the hope that it
+will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details at
+http://www.gnu.org/copyleft/gpl.html
+*/
+
+
+/*
+This is a small package for turtle graphics in Maxima.
+
+Internal variables concerning object 'turtle':
+  - xcor
+  - ycor
+  - heading
+  - pendownp
+
+Functions for object 'turtle':
+  - forward(n)
+  - arc(angle,radius)
+  - left(n)
+  - right(n)
+  - back(n)
+  - setxy(n,n)
+  - setx(n)
+  - sety(n)
+  - home()
+  - towards(number,number)
+  - penup()
+  - pendown()
+  - repeat(n, ....)
+  - to(name, ....)
+  - setpencolor(number)
+  - setpensize(number)
+  - setheading(angle)
+  - make(variable, number)
+  - when(condition, ..., ...)
+  - ifelse(condition,[...],[...])
+*/
+
+
+put('turtle, 1, 'version) $
+
+if not get('draw,'version) then load("draw") $
+
+turtle([logo]):=
+  block([codraw:[points_joined = true,
+                 transparent = true,
+                 point_type = dot],
+         numer: true,
+         to_routines, var,
+         _segment,_forward,_backward,_jump,_substvar,_parse],
+
+    var[heading]: 90,
+    var[xcor]: 0,
+    var[ycor]: 0,
+    var[pendownp]: true,
+
+    local(_segment,_forward,_backward,_jump,_substvar,_parse),
+
+    _segment(p1,p2):=
+      codraw: endcons(points([p1,p2]), codraw),
+
+    _forward(d):=
+      block([rad: var[heading]*%pi/180],
+        _segment([var[xcor], var[ycor]],
+            [var[xcor], var[ycor]]:
+                  [var[xcor], var[ycor]]+d*[cos(rad), sin(rad)])),
+
+    _backward(d):=
+      block([rad: var[heading]*%pi/180+%pi],
+        _segment([var[xcor], var[ycor]],
+            [var[xcor], var[ycor]]:
+                  [var[xcor], var[ycor]]+d*[cos(rad), sin(rad)])),
+
+    _jump(x,y):=
+      block([pos2:[var[xcor], var[ycor]]],
+       if not x = false then pos2[1]: x,
+       if not y = false then pos2[2]: y,
+       _segment([var[xcor], var[ycor]], pos2),
+       [var[xcor], var[ycor]]: pos2),
+
+    _substvar(expr):=
+      subst(map("=",
+                flatten(sublist(arrayinfo(var),listp)),
+                flatten(listarray(var))),
+            expr),
+
+    _parse(l):=
+        for s in l do
+         (if not atom(s) and op(s) = 'make
+            then s: make(args(s)[1], _substvar(args(s)[2]))
+            else if not atom(s) and op(s) # 'repeat and op(s) # 'to 
+                   then s: _substvar(s),
+
+          if not atom(s) and op(s) = 'forward 
+            then _forward(ev(first(args(s)), nouns))
+
+          elseif not atom(s) and op(s) = 'back
+            then _backward(ev(first(args(s)), nouns))
+
+          elseif not atom(s) and op(s) = 'right
+            then var[heading]: var[heading] - ev(first(args(s)),nouns)
+
+          elseif not atom(s) and op(s) = 'left
+            then var[heading]: var[heading] + ev(first(args(s)),nouns)
+
+          elseif not atom(s) and op(s) = 'setxy
+            then _jump(ev(args(s)[1],nouns),
+                       ev(args(s)[2],nouns))
+
+          elseif not atom(s) and op(s) = 'setx
+            then _jump(ev(args(s)[1],nouns), false)
+
+          elseif not atom(s) and op(s) = 'sety
+            then _jump(false, ev(args(s)[1],nouns))
+
+          elseif not atom(s) and op(s) = 'home
+            then _jump(0,0)
+
+          elseif not atom(s) and op(s) = 'towards
+            then var[heading]:
+                     block([u,v,fu,fv,a],
+                        [u,v]: ev(args(s),nouns) - [var[xcor], var[ycor]],
+                        [fu,fv]: float([u,v]),
+                        if fu=0.0
+                          then if fv>0.0
+                                 then 90
+                               elseif fv<0.0
+                                 then -90
+                                 else var[heading]
+                          else (a: atan(v/u)*180/%pi,
+                                if fu>0.0
+                                  then a
+                                  else 180+a))
+
+          elseif not atom(s) and op(s) = 'penup
+            then (var[pendownp]: true,
+                  codraw: endcons(points_joined = false, codraw))
+
+          elseif not atom(s) and op(s) = 'pendown
+            then (var[pendownp]: false,
+                  codraw: endcons(points_joined = true, codraw))
+
+          elseif not atom(s) and op(s) = 'repeat
+            then
+              for i:1 thru args(s)[1] do
+                _parse(rest(args(s)))
+
+          elseif not atom(s) and op(s) = 'to
+            then to_routines[args(s)[1]]: rest(args(s))
+            
+          elseif not atom(s) and op(s) = 'setpencolor
+            then block([colores:["black", "blue", "green", "cyan", "red",
+                                 "magenta", "yellow", "white", "brown",
+                                 "#d2b48c"/*tan*/, "forest-green", "aquamarine",
+                                 "salmon", "purple", "orange",  "grey"]],
+                   codraw: endcons(color = colores[ev(mod(args(s)[1],
+                                                       length(colores))+1, nouns)],
+                                   codraw))
+
+          elseif not atom(s) and op(s) = 'setpensize
+            then codraw: endcons(line_width = round(abs(ev(args(s)[1],nouns))), codraw)
+
+          elseif not atom(s) and op(s) = 'setheading
+            then var[heading]: ev(first(args(s)),nouns)
+
+          elseif not atom(s) and op(s) = 'arc
+            then codraw: endcons(ellipse(var[xcor],
+                                         var[ycor],
+                                         ev(args(s)[2],nouns),
+                                         ev(args(s)[2],nouns),
+                                         var[heading],
+                                         ev(args(s)[1],nouns)),
+                                 codraw)
+
+          elseif not atom(s) and op(s) = 'when and is(ev(args(s)[1],nouns))
+            then _parse(rest(args(s)))
+
+          elseif not atom(s) and op(s) = 'ifelse
+            then if is(ev(args(s)[1],nouns))
+                   then _parse(part(s,2))
+                   else _parse(part(s,3))
+
+          elseif not atom(s) and listp(to_routines[op(s)])
+            then if length(to_routines[op(s)][1]) > 0
+                    then /* routine with parameters  */
+                          _parse(subst(map("=", to_routines[op(s)][1], args(s)),
+                                      rest(to_routines[op(s)])))
+                    else /* routine without parameters */
+                           _parse(to_routines[op(s)])
+
+          elseif not atom(s) and op(s) = 'make
+            then var[args(s)[1]]: ev(args(s)[2],nouns)
+
+    ),
+
+    _parse(args(logo)),
+    remarray(to_routines, var),
+    codraw)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+set_draw_defaults(
+  terminal          = svg,
+  dimensions        = [350,350],
+  proportional_axes = xy) $ 
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+showtime:true$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Pentaflake */
+/* Around 35 s for repeat(5,
+            right(72),
+            pentaflake(4,10)
+        ) */
+wxdraw2d(
+    turtle(
+        to(pentaflake,[depth,side],
+            ifelse(depth=0,
+                [
+                    forward(side)
+                ],
+                [
+                    pentaflake(depth-1,side),
+                    right(36),
+                    right(36),
+                    pentaflake(depth-1,side),
+                    right(36),
+                    right(36),
+                    pentaflake(depth-1,side),
+                    right(180),
+                    pentaflake(depth-1,side),
+                    left(36),
+                    pentaflake(depth-1,side),
+                    right(36),
+                    right(36),
+                    pentaflake(depth-1,side)
+                ]
+            )
+        ),
+        repeat(5,
+            right(72),
+            pentaflake(4,10)
+        )
+    )
+);
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
