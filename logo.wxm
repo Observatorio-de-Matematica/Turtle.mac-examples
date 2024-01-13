@@ -1,0 +1,288 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* José Rafael Rodríguez Galván (2007) Maxima con wxMaxima: software libre en el aula
+de matemáticas */;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+posicion:[0,0]$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+ruta:[posicion]$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+rumbo:%pi/2$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+a_radianes(angulo_grados):=angulo_grados*%pi/180$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia() := block( posicion:[0,0], ruta:[posicion], rumbo:%pi/2)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+avanza(distancia) := block(
+posicion:posicion+distancia*[cos(rumbo),sin(rumbo)],
+ruta:cons(float(posicion),ruta)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+derecha(angulo) := rumbo: rumbo - a_radianes(angulo)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+izquierda(angulo) := rumbo: rumbo + a_radianes(angulo)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja() := plot2d([discrete, ruta]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+avanza(5)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+derecha(90)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+avanza(4)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+derecha(90)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+avanza(3)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+derecha(90)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+avanza(2)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+derecha(90)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+avanza(1)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+for i:5 thru 1 step -1 do ( avanza(i), derecha(90) )$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+poligono(lado,angulo):=block(
+[num_iteraciones:36],
+for i:1 thru num_iteraciones do (avanza(lado), derecha(angulo))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+poligono(1,60)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+poligono(1,108)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+poligono(1,135)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+poligono(1,10)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+curva_koch(talla,nivel):=block(
+if(nivel=0) then (avanza(float(talla)), return(true)),
+curva_koch(talla/3,nivel-1),
+izquierda(60),
+curva_koch(talla/3,nivel-1),
+derecha(120),
+curva_koch(talla/3,nivel-1),
+izquierda(60),
+curva_koch(talla/3,nivel-1)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+curva_koch(1,1)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+curva_koch(1,2)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+curva_koch(1,3)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+curva_koch(1,4)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+copo_de_nieve(talla,nivel):=block(
+thru 3 do (curva_koch(talla, nivel), derecha(120))
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+reinicia()$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+copo_de_nieve(1,5)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dibuja()$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
